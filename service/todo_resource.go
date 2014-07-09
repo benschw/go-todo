@@ -17,37 +17,29 @@ func (tr *TodoResource) CreateTodo(c *gin.Context) {
 	var json api.Todo
 
 	if c.EnsureBody(&json) {
-		tx, err := tr.db.Begin()
-		if err != nil {
-			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
-			return
-		}
-
 		json.Status = "todo"
 		json.Created = int32(time.Now().Unix())
-		resp, err := tx.Exec(
+		resp, err := tr.db.Exec(
 			`INSERT INTO Todo (created, status, title, description) VALUES (?, ?, ?, ?)`,
 			json.Created, json.Status, json.Title, json.Description,
 		)
 		if err != nil {
 			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
+			c.JSON(500, api.NewError("database error"))
 			return
 		}
-		tx.Commit()
 
 		id, err := resp.LastInsertId()
 		if err != nil {
 			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
+			c.JSON(500, api.NewError("database error"))
 			return
 		}
 
 		todo, err := tr.queryForTodo(int(id))
 		if err != nil {
 			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
+			c.JSON(500, api.NewError("database error"))
 			return
 		}
 
@@ -67,7 +59,7 @@ func (tr *TodoResource) GetAllTodos(c *gin.Context) {
 	rows, err := tr.db.Query("SELECT id, created, status, title, description FROM Todo ORDER BY created DESC")
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "database error"})
+		c.JSON(500, api.NewError("database error"))
 		return
 	}
 
@@ -87,12 +79,12 @@ func (tr *TodoResource) GetTodo(c *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "input error"})
+		c.JSON(422, api.NewError("problem decoding id sent"))
 		return
 	}
 	todo, err := tr.queryForTodo(id)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "not found"})
+		c.JSON(404, api.NewError("not found"))
 		return
 	}
 
@@ -106,32 +98,24 @@ func (tr *TodoResource) UpdateTodo(c *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "input error"})
+		c.JSON(422, api.NewError("problem decoding id sent"))
 		return
 	}
 
 	if c.EnsureBody(&json) {
-		tx, err := tr.db.Begin()
-		if err != nil {
-			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
-			return
-		}
-
-		_, err = tx.Exec(
+		_, err := tr.db.Exec(
 			`UPDATE Todo SET status = ?, title = ?, description = ? WHERE id = ?`,
 			json.Status, json.Title, json.Description, id,
 		)
 		if err != nil {
 			log.Print(err)
-			c.JSON(500, gin.H{"error": "database error"})
+			c.JSON(500, api.NewError("database error"))
 			return
 		}
-		tx.Commit()
 
 		todo, err := tr.queryForTodo(id)
 		if err != nil {
-			c.JSON(404, gin.H{"error": "not found"})
+			c.JSON(404, api.NewError("not found"))
 			return
 		}
 
@@ -146,7 +130,7 @@ func (tr *TodoResource) PatchTodo(c *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "input error"})
+		c.JSON(422, api.NewError("problem decoding id sent"))
 		return
 	}
 
@@ -154,32 +138,23 @@ func (tr *TodoResource) PatchTodo(c *gin.Context) {
 	// recovering from the panic and using my object that already has the json body bound to it.
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("%+v", json)
-
 			if json[0].Op != "replace" && json[0].Path != "/status" {
-				c.JSON(422, gin.H{"error": "PATCH support is limited and can only replace the /status path"})
+				c.JSON(422, api.NewError("PATCH support is limited and can only replace the /status path"))
 				return
 			}
-			tx, err := tr.db.Begin()
-			if err != nil {
-				log.Print(err)
-				c.JSON(500, gin.H{"error": "database error"})
-				return
-			}
-			_, err = tx.Exec(
+			_, err := tr.db.Exec(
 				`UPDATE Todo SET status = ? WHERE id = ?`,
 				json[0].Value, id,
 			)
 			if err != nil {
 				log.Print(err)
-				c.JSON(500, gin.H{"error": "database error"})
+				c.JSON(500, api.NewError("database error"))
 				return
 			}
-			tx.Commit()
 
 			todo, err := tr.queryForTodo(id)
 			if err != nil {
-				c.JSON(404, gin.H{"error": "not found"})
+				c.JSON(404, api.NewError("not found"))
 				return
 			}
 
@@ -195,25 +170,17 @@ func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "input error"})
+		c.JSON(422, api.NewError("problem decoding id sent"))
 		return
 	}
 
-	tx, err := tr.db.Begin()
-	if err != nil {
-		log.Print(err)
-		c.JSON(500, gin.H{"error": "database error"})
-		return
-	}
-
-	_, err = tx.Exec(`DELETE FROM Todo WHERE id = ?`, id)
+	_, err = tr.db.Exec(`DELETE FROM Todo WHERE id = ?`, id)
 
 	if err != nil {
 		log.Print(err)
-		c.JSON(500, gin.H{"error": "database error"})
+		c.JSON(500, api.NewError("database error"))
 		return
 	}
-	tx.Commit()
 
 	c.Data(204, "application/json", make([]byte, 0))
 }
