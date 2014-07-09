@@ -13,7 +13,7 @@ type TodoResource struct {
 }
 
 func (tr *TodoResource) CreateTodo(c *gin.Context) {
-	var json TodoJSON
+	var json Todo
 
 	if c.EnsureBody(&json) {
 		tx, err := tr.db.Begin()
@@ -43,7 +43,7 @@ func (tr *TodoResource) CreateTodo(c *gin.Context) {
 			return
 		}
 
-		todo, err := tr.getTodoStruct(int(id))
+		todo, err := tr.queryForTodo(int(id))
 		if err != nil {
 			log.Print(err)
 			c.JSON(500, gin.H{"error": "database error"})
@@ -70,12 +70,12 @@ func (tr *TodoResource) GetAllTodos(c *gin.Context) {
 		return
 	}
 
-	var todos = make([]TodoJSON, 0)
+	var todos = make([]Todo, 0)
 
 	for rows.Next() {
 		rows.Scan(&id, &created, &status, &title, &description)
 
-		todos = append(todos, TodoJSON{Id: id, Created: created, Status: status, Title: title, Description: description})
+		todos = append(todos, Todo{Id: id, Created: created, Status: status, Title: title, Description: description})
 	}
 
 	c.JSON(200, todos)
@@ -89,7 +89,7 @@ func (tr *TodoResource) GetTodo(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "input error"})
 		return
 	}
-	todo, err := tr.getTodoStruct(id)
+	todo, err := tr.queryForTodo(id)
 	if err != nil {
 		c.JSON(404, gin.H{"error": "not found"})
 		return
@@ -126,7 +126,7 @@ func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 	c.Data(204, "application/json", make([]byte, 0))
 }
 
-func (tr *TodoResource) getTodoStruct(id int) (TodoJSON, error) {
+func (tr *TodoResource) queryForTodo(id int) (Todo, error) {
 	var (
 		created     int32
 		status      string
@@ -139,9 +139,9 @@ func (tr *TodoResource) getTodoStruct(id int) (TodoJSON, error) {
 		Scan(&created, &status, &title, &description)
 
 	if err != nil {
-		return TodoJSON{}, err
+		return Todo{}, err
 	}
 
-	return TodoJSON{Id: int32(id), Created: created, Status: status, Title: title, Description: description}, nil
+	return Todo{Id: int32(id), Created: created, Status: status, Title: title, Description: description}, nil
 
 }

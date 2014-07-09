@@ -13,9 +13,9 @@ type TodoClient struct {
 	host string
 }
 
-func (tc *TodoClient) CreateTodo(title string, description string) (TodoJSON, error) {
-	var respTodo TodoJSON
-	todo := TodoJSON{Title: title, Description: description}
+func (tc *TodoClient) CreateTodo(title string, description string) (Todo, error) {
+	var respTodo Todo
+	todo := Todo{Title: title, Description: description}
 
 	b, err := json.Marshal(todo)
 	if err != nil {
@@ -42,8 +42,8 @@ func (tc *TodoClient) CreateTodo(title string, description string) (TodoJSON, er
 	return respTodo, nil
 }
 
-func (tc *TodoClient) GetAllTodos() ([]TodoJSON, error) {
-	var respTodos []TodoJSON
+func (tc *TodoClient) GetAllTodos() ([]Todo, error) {
+	var respTodos []Todo
 
 	r, err := http.Get("http://" + tc.host + "/todo")
 	if err != nil {
@@ -64,8 +64,8 @@ func (tc *TodoClient) GetAllTodos() ([]TodoJSON, error) {
 	return respTodos, nil
 }
 
-func (tc *TodoClient) GetTodo(id int32) (TodoJSON, error) {
-	var respTodo TodoJSON
+func (tc *TodoClient) GetTodo(id int32) (Todo, error) {
+	var respTodo Todo
 
 	r, err := http.Get("http://" + tc.host + "/todo/" + strconv.FormatInt(int64(id), 10))
 	if err != nil {

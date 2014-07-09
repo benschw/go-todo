@@ -1,6 +1,6 @@
 package main
 
-type TodoJSON struct {
+type Todo struct {
 	Id          int32  `json:"id"`
 	Created     int32  `json:"created"`
 	Status      string `json:"status"`
