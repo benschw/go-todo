@@ -1,6 +1,7 @@
-package main
+package service
 
 import (
+	"github.com/benschw/go-todo/api"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
@@ -13,7 +14,7 @@ type TodoResource struct {
 }
 
 func (tr *TodoResource) CreateTodo(c *gin.Context) {
-	var json Todo
+	var json api.Todo
 
 	if c.EnsureBody(&json) {
 		tx, err := tr.db.Begin()
@@ -70,12 +71,12 @@ func (tr *TodoResource) GetAllTodos(c *gin.Context) {
 		return
 	}
 
-	var todos = make([]Todo, 0)
+	var todos = make([]api.Todo, 0)
 
 	for rows.Next() {
 		rows.Scan(&id, &created, &status, &title, &description)
 
-		todos = append(todos, Todo{Id: id, Created: created, Status: status, Title: title, Description: description})
+		todos = append(todos, api.Todo{Id: id, Created: created, Status: status, Title: title, Description: description})
 	}
 
 	c.JSON(200, todos)
@@ -126,7 +127,7 @@ func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 	c.Data(204, "application/json", make([]byte, 0))
 }
 
-func (tr *TodoResource) queryForTodo(id int) (Todo, error) {
+func (tr *TodoResource) queryForTodo(id int) (api.Todo, error) {
 	var (
 		created     int32
 		status      string
@@ -139,9 +140,9 @@ func (tr *TodoResource) queryForTodo(id int) (Todo, error) {
 		Scan(&created, &status, &title, &description)
 
 	if err != nil {
-		return Todo{}, err
+		return api.Todo{}, err
 	}
 
-	return Todo{Id: int32(id), Created: created, Status: status, Title: title, Description: description}, nil
+	return api.Todo{Id: int32(id), Created: created, Status: status, Title: title, Description: description}, nil
 
 }

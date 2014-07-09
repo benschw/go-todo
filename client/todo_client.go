@@ -1,21 +1,22 @@
-package main
+package client
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/benschw/go-todo/api"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 )
 
 type TodoClient struct {
-	host string
+	Host string
 }
 
-func (tc *TodoClient) CreateTodo(title string, description string) (Todo, error) {
-	var respTodo Todo
-	todo := Todo{Title: title, Description: description}
+func (tc *TodoClient) CreateTodo(title string, description string) (api.Todo, error) {
+	var respTodo api.Todo
+	todo := api.Todo{Title: title, Description: description}
 
 	b, err := json.Marshal(todo)
 	if err != nil {
@@ -23,7 +24,7 @@ func (tc *TodoClient) CreateTodo(title string, description string) (Todo, error)
 	}
 
 	body := bytes.NewBuffer(b)
-	r, err := http.Post("http://"+tc.host+"/todo", "application/json", body)
+	r, err := http.Post("http://"+tc.Host+"/todo", "application/json", body)
 	if err != nil {
 		return respTodo, err
 	}
@@ -42,10 +43,10 @@ func (tc *TodoClient) CreateTodo(title string, description string) (Todo, error)
 	return respTodo, nil
 }
 
-func (tc *TodoClient) GetAllTodos() ([]Todo, error) {
-	var respTodos []Todo
+func (tc *TodoClient) GetAllTodos() ([]api.Todo, error) {
+	var respTodos []api.Todo
 
-	r, err := http.Get("http://" + tc.host + "/todo")
+	r, err := http.Get("http://" + tc.Host + "/todo")
 	if err != nil {
 		return respTodos, err
 	}
@@ -64,10 +65,10 @@ func (tc *TodoClient) GetAllTodos() ([]Todo, error) {
 	return respTodos, nil
 }
 
-func (tc *TodoClient) GetTodo(id int32) (Todo, error) {
-	var respTodo Todo
+func (tc *TodoClient) GetTodo(id int32) (api.Todo, error) {
+	var respTodo api.Todo
 
-	r, err := http.Get("http://" + tc.host + "/todo/" + strconv.FormatInt(int64(id), 10))
+	r, err := http.Get("http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10))
 	if err != nil {
 		return respTodo, err
 	}
@@ -87,7 +88,7 @@ func (tc *TodoClient) GetTodo(id int32) (Todo, error) {
 }
 
 func (tc *TodoClient) DeleteTodo(id int32) error {
-	url := "http://" + tc.host + "/todo/" + strconv.FormatInt(int64(id), 10)
+	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		return err

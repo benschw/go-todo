@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/benschw/go-todo/service"
 	"log"
 	"os"
 )
@@ -13,9 +14,9 @@ func main() {
 		dbHost     = "localhost"
 		dbName     = "Todo"
 	)
-	server := TodoService{SvcHost: svcHost, DbUser: dbUser, DbPassword: dbPassword, DbHost: dbHost, DbName: dbName}
+	svc := service.TodoService{SvcHost: svcHost, DbUser: dbUser, DbPassword: dbPassword, DbHost: dbHost, DbName: dbName}
 
-	err := server.Run()
+	err := svc.Run()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)

@@ -1,4 +1,4 @@
-package main
+package service
 
 /**
  * Wrapping sql interface & mysql driver implementation to keep db driver decision encapsulated

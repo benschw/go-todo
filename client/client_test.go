@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestCreateTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{host: "localhost:8080"}
+	client := TodoClient{Host: "localhost:8080"}
 
 	// when
 	todo, err := client.CreateTodo("foo", "bar")
@@ -33,7 +33,7 @@ func TestCreateTodo(t *testing.T) {
 func TestGetTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{host: "localhost:8080"}
+	client := TodoClient{Host: "localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
@@ -56,7 +56,7 @@ func TestGetTodo(t *testing.T) {
 func TestGetAllTodos(t *testing.T) {
 
 	// given
-	client := TodoClient{host: "localhost:8080"}
+	client := TodoClient{Host: "localhost:8080"}
 	client.CreateTodo("foo", "bar")
 	client.CreateTodo("baz", "bing")
 
@@ -86,7 +86,7 @@ func TestGetAllTodos(t *testing.T) {
 func TestDeleteTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{host: "localhost:8080"}
+	client := TodoClient{Host: "localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
