@@ -28,6 +28,8 @@ func (s *TodoService) Run() error {
 	r.GET("/todo", todoResource.GetAllTodos)
 	r.GET("/todo/:id", todoResource.GetTodo)
 	r.POST("/todo", todoResource.CreateTodo)
+	r.PUT("/todo/:id", todoResource.UpdateTodo)
+	r.PATCH("/todo/:id", todoResource.PatchTodo)
 	r.DELETE("/todo/:id", todoResource.DeleteTodo)
 
 	r.Run(s.SvcHost)

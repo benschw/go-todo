@@ -99,6 +99,97 @@ func (tr *TodoResource) GetTodo(c *gin.Context) {
 	c.JSON(200, todo)
 }
 
+func (tr *TodoResource) UpdateTodo(c *gin.Context) {
+	var json api.Todo
+
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, gin.H{"error": "input error"})
+		return
+	}
+
+	if c.EnsureBody(&json) {
+		tx, err := tr.db.Begin()
+		if err != nil {
+			log.Print(err)
+			c.JSON(500, gin.H{"error": "database error"})
+			return
+		}
+
+		_, err = tx.Exec(
+			`UPDATE Todo SET status = ?, title = ?, description = ? WHERE id = ?`,
+			json.Status, json.Title, json.Description, id,
+		)
+		if err != nil {
+			log.Print(err)
+			c.JSON(500, gin.H{"error": "database error"})
+			return
+		}
+		tx.Commit()
+
+		todo, err := tr.queryForTodo(id)
+		if err != nil {
+			c.JSON(404, gin.H{"error": "not found"})
+			return
+		}
+
+		c.JSON(200, todo)
+	}
+}
+
+func (tr *TodoResource) PatchTodo(c *gin.Context) {
+	var json []api.Patch
+
+	idStr := c.Params.ByName("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Print(err)
+		c.JSON(500, gin.H{"error": "input error"})
+		return
+	}
+
+	// this is a hack because Gin falsely claims my unmarshalled obj is invalid.
+	// recovering from the panic and using my object that already has the json body bound to it.
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("%+v", json)
+
+			if json[0].Op != "replace" && json[0].Path != "/status" {
+				c.JSON(422, gin.H{"error": "PATCH support is limited and can only replace the /status path"})
+				return
+			}
+			tx, err := tr.db.Begin()
+			if err != nil {
+				log.Print(err)
+				c.JSON(500, gin.H{"error": "database error"})
+				return
+			}
+			_, err = tx.Exec(
+				`UPDATE Todo SET status = ? WHERE id = ?`,
+				json[0].Value, id,
+			)
+			if err != nil {
+				log.Print(err)
+				c.JSON(500, gin.H{"error": "database error"})
+				return
+			}
+			tx.Commit()
+
+			todo, err := tr.queryForTodo(id)
+			if err != nil {
+				c.JSON(404, gin.H{"error": "not found"})
+				return
+			}
+
+			c.JSON(200, todo)
+		}
+	}()
+	c.Bind(&json)
+
+}
+
 func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id, err := strconv.Atoi(idStr)

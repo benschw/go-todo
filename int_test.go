@@ -1,8 +1,10 @@
-package client
+package main
 
 import (
 	"fmt"
+	"github.com/benschw/go-todo/client"
 	"log"
+	"reflect"
 	"testing"
 )
 
@@ -12,7 +14,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestCreateTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "localhost:8080"}
 
 	// when
 	todo, err := client.CreateTodo("foo", "bar")
@@ -33,7 +35,7 @@ func TestCreateTodo(t *testing.T) {
 func TestGetTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
@@ -53,10 +55,61 @@ func TestGetTodo(t *testing.T) {
 	_ = client.DeleteTodo(todo.Id)
 }
 
+func TestUpdateTodo(t *testing.T) {
+
+	// given
+	client := client.TodoClient{Host: "localhost:8080"}
+	todo, _ := client.CreateTodo("foo", "bar")
+
+	// when
+	todo.Status = "doing"
+	todo.Title = "baz"
+	todo.Description = "bing"
+	_, err := client.UpdateTodo(todo)
+
+	// then
+	if err != nil {
+		t.Error(err)
+	}
+
+	todoResult, _ := client.GetTodo(todo.Id)
+
+	if !reflect.DeepEqual(todo, todoResult) {
+		t.Error("returned todo not updated")
+	}
+
+	// cleanup
+	_ = client.DeleteTodo(todo.Id)
+}
+
+func TestUpdateTodoStatus(t *testing.T) {
+
+	// given
+	client := client.TodoClient{Host: "localhost:8080"}
+	todo, _ := client.CreateTodo("foo", "bar")
+
+	// when
+	_, err := client.UpdateTodoStatus(todo.Id, "doing")
+
+	// then
+	if err != nil {
+		t.Error(err)
+	}
+
+	todoResult, _ := client.GetTodo(todo.Id)
+
+	if todoResult.Status != "doing" {
+		t.Error("returned todo status not updated")
+	}
+
+	// cleanup
+	_ = client.DeleteTodo(todo.Id)
+}
+
 func TestGetAllTodos(t *testing.T) {
 
 	// given
-	client := TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "localhost:8080"}
 	client.CreateTodo("foo", "bar")
 	client.CreateTodo("baz", "bing")
 
@@ -86,7 +139,7 @@ func TestGetAllTodos(t *testing.T) {
 func TestDeleteTodo(t *testing.T) {
 
 	// given
-	client := TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
