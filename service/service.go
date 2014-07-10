@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 )
 
 type TodoService struct {
@@ -13,13 +15,13 @@ type TodoService struct {
 }
 
 func (s *TodoService) Run() error {
-	connectionString := s.DbUser + ":" + s.DbPassword + "@tcp(" + s.DbHost + ":3306)/" + s.DbName
+	connectionString := s.DbUser + ":" + s.DbPassword + "@tcp(" + s.DbHost + ":3306)/" + s.DbName + "?charset=utf8&parseTime=True"
 
-	db, err := Open(connectionString)
+	db, err := gorm.Open("mysql", connectionString)
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	db.SingularTable(true)
 
 	todoResource := &TodoResource{db: db}
 

@@ -82,6 +82,26 @@ func TestUpdateTodo(t *testing.T) {
 	_ = client.DeleteTodo(todo.Id)
 }
 
+func TestUpdateNonExistantTodo(t *testing.T) {
+
+	// given
+	client := client.TodoClient{Host: "localhost:8080"}
+	todo, _ := client.CreateTodo("foo", "bar")
+	_ = client.DeleteTodo(todo.Id)
+
+	// when
+	todo.Status = "doing"
+	todo.Title = "baz"
+	todo.Description = "bing"
+	_, err := client.UpdateTodo(todo)
+
+	// then
+	if err == nil {
+		t.Error(err)
+	}
+
+}
+
 func TestUpdateTodoStatus(t *testing.T) {
 
 	// given
