@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type TodoService struct {
+type Config struct {
 	SvcHost    string
 	DbUser     string
 	DbPassword string
@@ -14,8 +14,11 @@ type TodoService struct {
 	DbName     string
 }
 
-func (s *TodoService) Run() error {
-	connectionString := s.DbUser + ":" + s.DbPassword + "@tcp(" + s.DbHost + ":3306)/" + s.DbName + "?charset=utf8&parseTime=True"
+type TodoService struct {
+}
+
+func (s *TodoService) Run(cfg Config) error {
+	connectionString := cfg.DbUser + ":" + cfg.DbPassword + "@tcp(" + cfg.DbHost + ":3306)/" + cfg.DbName + "?charset=utf8&parseTime=True"
 
 	db, err := gorm.Open("mysql", connectionString)
 	if err != nil {
@@ -34,7 +37,7 @@ func (s *TodoService) Run() error {
 	r.PATCH("/todo/:id", todoResource.PatchTodo)
 	r.DELETE("/todo/:id", todoResource.DeleteTodo)
 
-	r.Run(s.SvcHost)
+	r.Run(cfg.SvcHost)
 
 	return nil
 }

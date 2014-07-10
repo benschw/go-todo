@@ -23,7 +23,6 @@ func (tc *TodoClient) CreateTodo(title string, description string) (api.Todo, er
 	}
 	err = processResponseEntity(r, &respTodo, 201)
 	return respTodo, err
-
 }
 
 func (tc *TodoClient) GetAllTodos() ([]api.Todo, error) {
@@ -36,7 +35,6 @@ func (tc *TodoClient) GetAllTodos() ([]api.Todo, error) {
 	}
 	err = processResponseEntity(r, &respTodos, 200)
 	return respTodos, err
-
 }
 
 func (tc *TodoClient) GetTodo(id int32) (api.Todo, error) {
@@ -49,7 +47,6 @@ func (tc *TodoClient) GetTodo(id int32) (api.Todo, error) {
 	}
 	err = processResponseEntity(r, &respTodo, 200)
 	return respTodo, err
-
 }
 
 func (tc *TodoClient) UpdateTodo(todo api.Todo) (api.Todo, error) {

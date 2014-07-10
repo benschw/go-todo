@@ -1,23 +1,42 @@
 package main
 
 import (
+	"errors"
 	"github.com/benschw/go-todo/service"
+	"gopkg.in/yaml.v1"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
-func main() {
-	var (
-		svcHost    = ":8080" // 0.0.0.0:8080
-		dbUser     = "root"
-		dbPassword = ""
-		dbHost     = "localhost"
-		dbName     = "Todo"
-	)
-	svc := service.TodoService{SvcHost: svcHost, DbUser: dbUser, DbPassword: dbPassword, DbHost: dbHost, DbName: dbName}
+func getConfig(yamlPath string) (service.Config, error) {
+	config := service.Config{}
 
-	err := svc.Run()
+	if _, err := os.Stat(yamlPath); err != nil {
+		return config, errors.New("config path not valid")
+	}
+
+	ymlData, err := ioutil.ReadFile(yamlPath)
 	if err != nil {
+		return config, err
+	}
+
+	err = yaml.Unmarshal([]byte(ymlData), &config)
+	return config, err
+}
+
+func main() {
+	yamlPath := "config.yaml"
+
+	cfg, err := getConfig(yamlPath)
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	svc := service.TodoService{}
+
+	if err = svc.Run(cfg); err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}

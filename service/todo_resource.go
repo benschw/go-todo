@@ -39,6 +39,7 @@ func (tr *TodoResource) GetAllTodos(c *gin.Context) {
 func (tr *TodoResource) GetTodo(c *gin.Context) {
 	id, err := tr.getId(c)
 	if err != nil {
+		c.JSON(400, api.NewError("problem decoding id sent"))
 		return
 	}
 
@@ -56,6 +57,7 @@ func (tr *TodoResource) GetTodo(c *gin.Context) {
 func (tr *TodoResource) UpdateTodo(c *gin.Context) {
 	id, err := tr.getId(c)
 	if err != nil {
+		c.JSON(400, api.NewError("problem decoding id sent"))
 		return
 	}
 
@@ -81,6 +83,7 @@ func (tr *TodoResource) UpdateTodo(c *gin.Context) {
 func (tr *TodoResource) PatchTodo(c *gin.Context) {
 	id, err := tr.getId(c)
 	if err != nil {
+		c.JSON(400, api.NewError("problem decoding id sent"))
 		return
 	}
 
@@ -113,6 +116,7 @@ func (tr *TodoResource) PatchTodo(c *gin.Context) {
 func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 	id, err := tr.getId(c)
 	if err != nil {
+		c.JSON(400, api.NewError("problem decoding id sent"))
 		return
 	}
 
@@ -133,7 +137,6 @@ func (tr *TodoResource) getId(c *gin.Context) (int32, error) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Print(err)
-		c.JSON(400, api.NewError("problem decoding id sent"))
 		return 0, err
 	}
 	return int32(id), nil

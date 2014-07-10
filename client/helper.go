@@ -19,6 +19,7 @@ func makeRequest(method string, url string, entity interface{}) (*http.Response,
 	}
 	return http.DefaultClient.Do(req)
 }
+
 func buildRequest(method string, url string, entity interface{}) (*http.Request, error) {
 	body, err := encodeEntity(entity)
 	if err != nil {
@@ -32,6 +33,7 @@ func buildRequest(method string, url string, entity interface{}) (*http.Request,
 	req.Header.Set("content-type", "application/json")
 	return req, err
 }
+
 func encodeEntity(entity interface{}) (io.Reader, error) {
 	if entity == nil {
 		return nil, nil
