@@ -13,7 +13,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestCreateTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 
 	// when
 	todo, err := client.CreateTodo("foo", "bar")

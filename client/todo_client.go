@@ -16,7 +16,7 @@ func (tc *TodoClient) CreateTodo(title string, description string) (api.Todo, er
 	var respTodo api.Todo
 	todo := api.Todo{Title: title, Description: description}
 
-	url := "http://" + tc.Host + "/todo"
+	url := tc.Host + "/todo"
 	r, err := makeRequest("POST", url, todo)
 	if err != nil {
 		return respTodo, err
@@ -28,7 +28,7 @@ func (tc *TodoClient) CreateTodo(title string, description string) (api.Todo, er
 func (tc *TodoClient) GetAllTodos() ([]api.Todo, error) {
 	var respTodos []api.Todo
 
-	url := "http://" + tc.Host + "/todo"
+	url := tc.Host + "/todo"
 	r, err := makeRequest("GET", url, nil)
 	if err != nil {
 		return respTodos, err
@@ -40,7 +40,7 @@ func (tc *TodoClient) GetAllTodos() ([]api.Todo, error) {
 func (tc *TodoClient) GetTodo(id int32) (api.Todo, error) {
 	var respTodo api.Todo
 
-	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
+	url := tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
 	r, err := makeRequest("GET", url, nil)
 	if err != nil {
 		return respTodo, err
@@ -52,7 +52,7 @@ func (tc *TodoClient) GetTodo(id int32) (api.Todo, error) {
 func (tc *TodoClient) UpdateTodo(todo api.Todo) (api.Todo, error) {
 	var respTodo api.Todo
 
-	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(todo.Id), 10)
+	url := tc.Host + "/todo/" + strconv.FormatInt(int64(todo.Id), 10)
 	r, err := makeRequest("PUT", url, todo)
 	if err != nil {
 		return respTodo, err
@@ -67,7 +67,7 @@ func (tc *TodoClient) UpdateTodoStatus(id int32, status string) (api.Todo, error
 	patchArr := make([]api.Patch, 1)
 	patchArr[0] = api.Patch{Op: "replace", Path: "/status", Value: string(status)}
 
-	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
+	url := tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
 	r, err := makeRequest("PATCH", url, patchArr)
 	if err != nil {
 		return respTodo, err
@@ -77,7 +77,7 @@ func (tc *TodoClient) UpdateTodoStatus(id int32, status string) (api.Todo, error
 }
 
 func (tc *TodoClient) DeleteTodo(id int32) error {
-	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
+	url := tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
 	r, err := makeRequest("DELETE", url, nil)
 	if err != nil {
 		return err

@@ -13,7 +13,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestGetTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
@@ -36,7 +36,7 @@ func TestGetTodo(t *testing.T) {
 func TestGetNotFoundTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	id := int32(3)
 
 	// when
@@ -51,7 +51,7 @@ func TestGetNotFoundTodo(t *testing.T) {
 func TestGetAllTodos(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	client.CreateTodo("foo", "bar")
 	client.CreateTodo("baz", "bing")
 

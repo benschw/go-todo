@@ -13,7 +13,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestDeleteTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	id := todo.Id
 
@@ -34,7 +34,7 @@ func TestDeleteTodo(t *testing.T) {
 func TestDeleteNotFoundTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	id := int32(3)
 	// when
 	err := client.DeleteTodo(id)

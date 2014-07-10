@@ -15,7 +15,7 @@ var _ = log.Print // For debugging; delete when done.
 func TestUpdateTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 
 	// when
@@ -42,7 +42,7 @@ func TestUpdateTodo(t *testing.T) {
 func TestUpdateNonExistantTodo(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 	_ = client.DeleteTodo(todo.Id)
 
@@ -62,7 +62,7 @@ func TestUpdateNonExistantTodo(t *testing.T) {
 func TestUpdateTodosStatus(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	todo, _ := client.CreateTodo("foo", "bar")
 
 	// when
@@ -86,7 +86,7 @@ func TestUpdateTodosStatus(t *testing.T) {
 func TestUpdateNotFoundTodosStatus(t *testing.T) {
 
 	// given
-	client := client.TodoClient{Host: "localhost:8080"}
+	client := client.TodoClient{Host: "http://localhost:8080"}
 	id := int32(3)
 	// when
 	_, err := client.UpdateTodoStatus(id, api.DoingStatus)
