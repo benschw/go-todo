@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/benschw/go-todo/api"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -17,10 +18,24 @@ type Config struct {
 type TodoService struct {
 }
 
-func (s *TodoService) Run(cfg Config) error {
+func (s *TodoService) getDb(cfg Config) (gorm.DB, error) {
 	connectionString := cfg.DbUser + ":" + cfg.DbPassword + "@tcp(" + cfg.DbHost + ":3306)/" + cfg.DbName + "?charset=utf8&parseTime=True"
 
-	db, err := gorm.Open("mysql", connectionString)
+	return gorm.Open("mysql", connectionString)
+}
+
+func (s *TodoService) Migrate(cfg Config) error {
+	db, err := s.getDb(cfg)
+	if err != nil {
+		return err
+	}
+	db.SingularTable(true)
+
+	db.AutoMigrate(api.Todo{})
+	return nil
+}
+func (s *TodoService) Run(cfg Config) error {
+	db, err := s.getDb(cfg)
 	if err != nil {
 		return err
 	}

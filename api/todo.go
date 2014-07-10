@@ -7,3 +7,9 @@ type Todo struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
 }
+
+const (
+	TodoStatus  string = "todo"
+	DoingStatus string = "doing"
+	DoneStatus  string = "done"
+)

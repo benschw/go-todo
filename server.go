@@ -3,13 +3,15 @@ package main
 import (
 	"errors"
 	"github.com/benschw/go-todo/service"
+	"github.com/codegangsta/cli"
 	"gopkg.in/yaml.v1"
 	"io/ioutil"
 	"log"
 	"os"
 )
 
-func getConfig(yamlPath string) (service.Config, error) {
+func getConfig(c *cli.Context) (service.Config, error) {
+	yamlPath := c.GlobalString("config")
 	config := service.Config{}
 
 	if _, err := os.Stat(yamlPath); err != nil {
@@ -26,19 +28,52 @@ func getConfig(yamlPath string) (service.Config, error) {
 }
 
 func main() {
-	yamlPath := "config.yaml"
 
-	cfg, err := getConfig(yamlPath)
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
+	app := cli.NewApp()
+	app.Name = "todo"
+	app.Usage = "work with the `todo` microservice"
+	app.Version = "0.0.1"
+
+	app.Flags = []cli.Flag{
+		cli.StringFlag{"config, c", "config.yaml", "config file to use"},
 	}
 
-	svc := service.TodoService{}
+	app.Commands = []cli.Command{
+		{
+			Name:  "server",
+			Usage: "Run the http server",
+			Action: func(c *cli.Context) {
+				cfg, err := getConfig(c)
+				if err != nil {
+					log.Fatal(err)
+					return
+				}
 
-	if err = svc.Run(cfg); err != nil {
-		log.Fatal(err)
-		os.Exit(1)
+				svc := service.TodoService{}
+
+				if err = svc.Run(cfg); err != nil {
+					log.Fatal(err)
+				}
+			},
+		},
+		{
+			Name:  "migratedb",
+			Usage: "Perform database migrations",
+			Action: func(c *cli.Context) {
+				cfg, err := getConfig(c)
+				if err != nil {
+					log.Fatal(err)
+					return
+				}
+
+				svc := service.TodoService{}
+
+				if err = svc.Migrate(cfg); err != nil {
+					log.Fatal(err)
+				}
+			},
+		},
 	}
+	app.Run(os.Args)
 
 }

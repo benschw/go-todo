@@ -65,7 +65,7 @@ func (tc *TodoClient) UpdateTodoStatus(id int32, status string) (api.Todo, error
 	var respTodo api.Todo
 
 	patchArr := make([]api.Patch, 1)
-	patchArr[0] = api.Patch{Op: "replace", Path: "/status", Value: status}
+	patchArr[0] = api.Patch{Op: "replace", Path: "/status", Value: string(status)}
 
 	url := "http://" + tc.Host + "/todo/" + strconv.FormatInt(int64(id), 10)
 	r, err := makeRequest("PATCH", url, patchArr)

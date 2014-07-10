@@ -20,7 +20,7 @@ func (tr *TodoResource) CreateTodo(c *gin.Context) {
 		c.JSON(400, api.NewError("problem decoding body"))
 		return
 	}
-	todo.Status = "todo"
+	todo.Status = api.TodoStatus
 	todo.Created = int32(time.Now().Unix())
 
 	tr.db.Save(&todo)
