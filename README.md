@@ -3,7 +3,7 @@
 Example (seed) project for microservices in go using the [Gin](http://gin-gonic.github.io/gin/) web framework.
 
 
-See the [blog post](http://txt.fliglio.com) for a walk through.
+See the [blog post](http://txt.fliglio.com/2014/07/restful-microservices-in-go-with-gin/) for a walk through.
 
 ### Hacking
 
