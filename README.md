@@ -1,17 +1,29 @@
-### sql
+## REST Microservice in Go for Gin
+
+Example (seed) project for microservices in go using the [Gin](http://gin-gonic.github.io/gin/) web framework.
 
 
-mysql -u root -p -e 'Create Database Todo; use Todo; CREATE TABLE todo ( id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, created int(10), status ENUM("todo", "doing", "done"), title VARCHAR(255), description TEXT) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
+See the [blog post](http://txt.fliglio.com) for a walk through.
 
-	CREATE DATABASE Todo
+### Hacking
+
+#### Build Service
 	
-	USE Todo
-	
-	CREATE TABLE todo (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		created int(10),
-		status ENUM('todo', 'doing', 'done'),
-		title VARCHAR(255),
-		description TEXT
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	make build
 
+#### Build the Database
+
+	mysql -u root -p -e 'Create Database Todo;'
+
+	./cmd/server/server --config config.yaml migratedb
+
+There's also a `make` target: `make migrate`, but you still need to create the database by hand.
+
+#### Run the Service
+
+	./cmd/server/server --config config.yaml server
+
+#### Testing
+The tests leverage a running instance of the server. This is automated with the `Make` target
+
+	make test
