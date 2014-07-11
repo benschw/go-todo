@@ -45,10 +45,8 @@ func (tr *TodoResource) GetTodo(c *gin.Context) {
 
 	var todo api.Todo
 
-	tr.db.First(&todo, id)
-
-	if todo.Id == 0 {
-		c.JSON(404, api.NewError("not found"))
+	if tr.db.First(&todo, id).RecordNotFound() {
+		c.JSON(404, gin.H{"error": "not found"})
 	} else {
 		c.JSON(200, todo)
 	}
@@ -70,14 +68,14 @@ func (tr *TodoResource) UpdateTodo(c *gin.Context) {
 	todo.Id = int32(id)
 
 	var existing api.Todo
-	tr.db.First(&existing, id)
 
-	if existing.Id == 0 {
+	if tr.db.First(&existing, id).RecordNotFound() {
 		c.JSON(404, api.NewError("not found"))
 	} else {
 		tr.db.Save(&todo)
 		c.JSON(200, todo)
 	}
+
 }
 
 func (tr *TodoResource) PatchTodo(c *gin.Context) {
@@ -99,15 +97,14 @@ func (tr *TodoResource) PatchTodo(c *gin.Context) {
 
 			var todo api.Todo
 
-			tr.db.First(&todo, id)
-			if todo.Id == 0 {
+			if tr.db.First(&todo, id).RecordNotFound() {
 				c.JSON(404, api.NewError("not found"))
-				return
-			}
-			todo.Status = json[0].Value
+			} else {
+				todo.Status = json[0].Value
 
-			tr.db.Save(&todo)
-			c.JSON(200, todo)
+				tr.db.Save(&todo)
+				c.JSON(200, todo)
+			}
 		}
 	}()
 	c.Bind(&json)
@@ -122,9 +119,7 @@ func (tr *TodoResource) DeleteTodo(c *gin.Context) {
 
 	var todo api.Todo
 
-	tr.db.First(&todo, id)
-
-	if todo.Id == 0 {
+	if tr.db.First(&todo, id).RecordNotFound() {
 		c.JSON(404, api.NewError("not found"))
 	} else {
 		tr.db.Delete(&todo)
