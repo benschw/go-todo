@@ -6,6 +6,9 @@ build:
 	cd cmd/todo; \
 	go build
 
+deps:
+	go get
+
 migrate:
 	./cmd/server/server --config config.yaml migratedb
 
