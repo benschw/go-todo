@@ -64,7 +64,7 @@ func TestGetAllTodos(t *testing.T) {
 	}
 
 	if len(todos) != 2 {
-		t.Error("wrong number of todos")
+		t.Errorf("wrong number of todos: %d", len(todos))
 	}
 	if todos[0].Title != "foo" && todos[0].Description != "bar" {
 		t.Error("returned todo not right")
