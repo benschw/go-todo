@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/benschw/go-todo/client"
+	"github.com/mingderwang/go-todo/client"
 	"log"
 	"testing"
 )

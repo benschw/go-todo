@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/benschw/go-todo/api"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/mingderwang/go-todo/api"
 )
 
 type Config struct {
@@ -19,9 +19,10 @@ type TodoService struct {
 }
 
 func (s *TodoService) getDb(cfg Config) (gorm.DB, error) {
-	connectionString := cfg.DbUser + ":" + cfg.DbPassword + "@tcp(" + cfg.DbHost + ":3306)/" + cfg.DbName + "?charset=utf8&parseTime=True"
-
-	return gorm.Open("mysql", connectionString)
+	db, err := gorm.Open("sqlite3", "/tmp/Todo.db")
+	//db.CreateTable(new(api.Todo))
+	//db.LogMode(true)
+	return db, err
 }
 
 func (s *TodoService) Migrate(cfg Config) error {
