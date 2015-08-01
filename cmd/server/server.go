@@ -2,8 +2,9 @@ package main
 
 import (
 	"errors"
-	"github.com/benschw/go-todo/service"
+	"fmt"
 	"github.com/codegangsta/cli"
+	"github.com/mingderwang/go-todo/service"
 	"gopkg.in/yaml.v1"
 	"io/ioutil"
 	"log"
@@ -46,6 +47,7 @@ func main() {
 				cfg, err := getConfig(c)
 				if err != nil {
 					log.Fatal(err)
+					fmt.Println(err)
 					return
 				}
 
