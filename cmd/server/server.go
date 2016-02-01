@@ -35,7 +35,7 @@ func main() {
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"config, c", "config.yaml", "config file to use", "APP_CONFIG"},
+		cli.StringFlag{Name: "config, c", Value: "config.yaml", Usage: "config file to use", EnvVar: "APP_CONFIG"},
 	}
 
 	app.Commands = []cli.Command{

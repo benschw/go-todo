@@ -17,7 +17,7 @@ func main() {
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"host", "http://localhost:8080", "Todo service host", "APP_HOST"},
+		cli.StringFlag{Name: "host", Value: "http://localhost:8080", Usage: "Todo service host", EnvVar: "APP_HOST"},
 	}
 
 	app.Commands = []cli.Command{
