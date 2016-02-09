@@ -16,7 +16,7 @@ type TodoResource struct {
 func (tr *TodoResource) CreateTodo(c *gin.Context) {
 	var todo api.Todo
 
-	if !c.Bind(&todo) {
+	if c.Bind(&todo) != nil {
 		c.JSON(400, api.NewError("problem decoding body"))
 		return
 	}
@@ -61,7 +61,7 @@ func (tr *TodoResource) UpdateTodo(c *gin.Context) {
 
 	var todo api.Todo
 
-	if !c.Bind(&todo) {
+	if c.Bind(&todo) != nil {
 		c.JSON(400, api.NewError("problem decoding body"))
 		return
 	}
